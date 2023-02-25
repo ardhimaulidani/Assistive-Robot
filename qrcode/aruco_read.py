@@ -2,7 +2,6 @@
 # By Ardhika Maulidani
 
 import argparse
-import imutils
 import time
 import sys
 import cv2
@@ -11,13 +10,18 @@ from camera import camera
 class aruco(object):
 	def __init__(self, device):
 		self.device = device
-		self.cap = camera(self.device)
+		self.cap = camera(self.device, 24, 416, 416)
 
-		self.dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_250)
+		self.dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_7X7_50)
 		self.parameters =  cv2.aruco.DetectorParameters()
 		self.detector = cv2.aruco.ArucoDetector(self.dictionary, self.parameters)
 
 	def capture (self):
+		# used to record the time when we processed last frame
+		prev_frame_time = 0
+		# used to record the time at which we processed current frame
+		new_frame_time = 0
+
 		while self.cap.is_opened():
 			# get frame from camera
 			self.frame = self.cap.capture()
@@ -58,6 +62,20 @@ class aruco(object):
 						(topLeft[0], topLeft[1] - 15),
 						cv2.FONT_HERSHEY_SIMPLEX,
 						0.5, (0, 255, 0), 2)			
+
+			# time when we finish processing for this frame
+			new_frame_time = time.time()
+		
+			# Calculating the fps
+		
+			# fps will be number of frame processed in given time frame
+			# since their will be most of time error of 0.001 second
+			# we will be subtracting it to get more accurate result
+			fps = 1/(new_frame_time-prev_frame_time)
+			prev_frame_time = new_frame_time
+		
+			# converting the fps into integer
+			print(int(fps))
 			
 			cv2.imshow("DEBUG", self.frame)
 			key = cv2.waitKey(1) & 0xFF			
@@ -67,5 +85,7 @@ class aruco(object):
 		self.cap.close()
 
 if __name__ == "__main__":
+
+
 	vision = aruco(0)
 	vision.capture()

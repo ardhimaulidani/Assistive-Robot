@@ -23,20 +23,21 @@ class Motor():
 
         self.PWM = GPIO.PWM(self.EN, 100)
         self.PWM.start(0)
+        self.stop()
 
     def forward(self, speed):
         GPIO.output(self.IN1, 1)
-        GPIO.output(self.IN1, 0)
+        GPIO.output(self.IN2, 0)
         self.PWM.ChangeDutyCycle(speed)
 
     def reverse(self, speed):
         GPIO.output(self.IN1, 0)
-        GPIO.output(self.IN1, 1)
+        GPIO.output(self.IN2, 1)
         self.PWM.ChangeDutyCycle(speed)
 
     def brake(self):
         GPIO.output(self.IN1, 1)
-        GPIO.output(self.IN1, 1)
+        GPIO.output(self.IN2, 1)
         
     def stop(self):
-        self.pwmVR.ChangeDutyCycle(0)
+        self.PWM.ChangeDutyCycle(0)
