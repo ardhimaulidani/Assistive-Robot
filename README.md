@@ -14,7 +14,9 @@ https://www.python.org/ftp/python/3.10.9/python-3.10.9-amd64.exe
 # Install Git
 https://github.com/git-for-windows/git/releases/download/v2.39.2.windows.1/Git-2.39.2-64-bit.exe
 
-# Install OpenCV with Community Contrib 
+# Open Visual Studio Code 
+# Install Python Extension & Remote-SSH Extension
+# Open VSCode Terminal and Install OpenCV with Community Contrib 
 pip install opencv-contrib-python
 
 # Clone Assistive Robot Workspace
