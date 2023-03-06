@@ -1,8 +1,6 @@
 # Aruco Detection Python Class
 # By Ardhika Maulidani
 
-# import tkinter as tk
-# from PIL import Image, ImageTk
 import argparse
 import time
 import sys
@@ -69,7 +67,6 @@ class aruco(object):
 		fps = 1/(self.curr_time-self.prev_time)
 		self.prev_time = self.curr_time
 	
-		# converting the fps into integer
 		# print(fps)
 		return(self.frame)
 	
