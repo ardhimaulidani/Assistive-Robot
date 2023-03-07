@@ -68,7 +68,7 @@ class aruco(object):
 		self.prev_time = self.curr_time
 	
 		# print(fps)
-		return(self.frame)
+		return(self.frame, ids)
 	
 	def destructor(self):
 		self.cap.close()
@@ -76,8 +76,11 @@ class aruco(object):
 
 if __name__ == "__main__":
 	vision = aruco(0)
-	try:
-		vision.capture()
-		vision.loop()
-	except KeyboardInterrupt:
-		vision.destructor()
+	while(1):
+		frame, a = vision.capture()
+		print(a)
+		k = cv2.waitKey(30) & 0xff
+		if k == 27:
+			break
+
+	cv2.destroyAllWindows()

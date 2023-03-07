@@ -3,12 +3,6 @@
 '''
     Usage :
     This is Camera Python Class for handling physical camera on mobile robot
-    INFORMATION
-    <> Attribute
-        - device            : Index camera yang digunakan
-        - camera            : Object capture opencv
-        - h_fov             : Horizontal Field of View camera yang digunakan
-        - v_fov             : Vertical Field of View camera yang digunakan
     <> Operation
         - is_opened() : Verify if camera can be opened (Return -> bool)
         - capture() : Get frame from camera (Return -> mat:frame)
@@ -21,12 +15,12 @@
 '''
 
 import cv2 as cv
-import threading
+from threading import Thread
 import numpy as np
 
 class camera(object):
 
-    def __init__(self, device, fps=30, width=640, height=480):
+    def __init__(self, device, fps=24, width=640, height=480):
         self.device = device
         self.camera = cv.VideoCapture(self.device)
         self.set_resolution(width, height)
