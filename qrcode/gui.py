@@ -1,6 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 import vlc
+import numpy
 from aruco_read import aruco
 
 class gui(object):
@@ -22,8 +23,9 @@ class gui(object):
         self.openCamButton = tk.Button(self.buttonFrame, text="Open Camera", command=self.showCam)        
         self.closeButton = tk.Button(self.buttonFrame, text="Close", command=self.destruct)
         
-        self.pauseButton = tk.Button(self.buttonFrame, text="Pause", command=self.OnPause)
-        self.playButton = tk.Button(self.buttonFrame, text="Play", command=self.OnPlay)
+        # self.pauseButton = tk.Button(self.buttonFrame, text="Pause", command=self.OnPause)
+        self.btnText = tk.StringVar()
+        self.playpauseButton = tk.Button(self.buttonFrame, textvariable=self.btnText, command=self.OnPlayPause)
 
     def createFrame(self):
         self.panel = tk.Frame(self.root, width=480, height=290)
@@ -32,7 +34,10 @@ class gui(object):
 
         self.buttonFrame = tk.Frame(self.root, width=480, height=30)
         self.buttonFrame.place(x=0, y=290)
-
+        # self.text_box = tk.Text(self.buttonFrame, height=30, width=120)
+        self.msgs = tk.StringVar()
+        self.text_box = tk.Label(self.buttonFrame, textvariable=self.msgs)
+        self.text_box.place(x=0, y=5)
 
     def destruct(self):
         if(self.cameraStatus == True):
@@ -42,8 +47,7 @@ class gui(object):
 
         else:
             self.player.stop()
-            self.pauseButton.place_forget()
-            self.playButton.place_forget()
+            self.playpauseButton.place_forget()
             self.closeButton.place_forget()
 
         self.video.place_forget()
@@ -55,6 +59,7 @@ class gui(object):
         if(self.cameraStatus != True):
             self.camera = aruco(0)
             self.cameraStatus = True
+            self.textStatus = False
 
             self.video.place(relx=0.5, rely=0.5, anchor="center")
             self.openVidButton.place_forget()
@@ -66,13 +71,25 @@ class gui(object):
             print("Video is still running...")
 
     def processing(self):
-        self.frame = self.camera.capture()
+        self.frame, self.ids = self.camera.capture()
         self.frame = self.frame[:,:,::-1]
         current_image = Image.fromarray(self.frame)  # convert image for PIL
         resize_image = current_image.resize((416,290), Image.ANTIALIAS)
         imgtk = ImageTk.PhotoImage(image=resize_image)  # convert image for tkinter
         self.video.imgtk = imgtk  # anchor imgtk so it does not be deleted by garbage-collector
         self.video.configure(image=imgtk)  # show the image
+        
+        if(self.ids is not None and (self.textStatus == False)):
+            temp = "Aruco IDs : " + str(self.ids[0]) + " detected!"
+            self.msgs.set(temp)
+            self.textStatus = True
+            
+            
+        elif (isinstance(self.ids, type(None)) and (self.textStatus == True)):
+            temp = ""
+            self.msgs.set(temp)
+            self.textStatus = False
+
         self.video.after(10, self.processing)
 
     def showVideo(self, input):
@@ -87,21 +104,36 @@ class gui(object):
 
             self.openVidButton.place_forget()
             self.openCamButton.place_forget()
-            
-            self.pauseButton.place(relx=0.39, rely=0.5, width=50, anchor="w")
-            self.playButton.place(relx=0.51, rely=0.5, width=50, anchor="w")
-            self.closeButton.place(relx=0.95, rely=0.5, width=50, anchor="e")
 
+            self.playpauseButton.place(relx=0.5, rely=0.5, width=50, anchor="center")
+            self.closeButton.place(relx=0.1, rely=0.5, anchor="w")
+            # self.pauseButton.place(relx=0.5, rely=0.5, width=50, anchor="center")
+            
             self.player.play()
+            self.playStatus = True
+            self.btnText.set("Pause")
+
         else:
             print("Error! Video still running...")
-        
-    def OnPlay(self):
-        if self.player.play() == -1:
-            self.errorDialog("Unable to play.")
+
+    def OnPlayPause(self):
+        if (self.playStatus != True):
+            self.player.play()
+            temp = "Pause"
+        else:
+            self.player.pause()  
+            temp = "Play"
+        self.playStatus = not self.playStatus    
+        self.btnText.set(temp)
+
+    # def OnPlay(self):
+    #     self.playStatus = True
+    #     if self.player.play() == -1:
+    #         self.errorDialog("Unable to play.")
     
-    def OnPause(self):
-        self.player.pause()
+    # def OnPause(self):
+    #     self.playStatus = False
+    #     self.player.pause()
 
     def destructor(self):
         self.root.destroy()
