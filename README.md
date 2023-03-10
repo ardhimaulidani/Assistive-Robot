@@ -17,7 +17,13 @@ https://github.com/git-for-windows/git/releases/download/v2.39.2.windows.1/Git-2
 # Open Visual Studio Code 
 # Install Python Extension & Remote-SSH Extension
 # Open VSCode Terminal and Install OpenCV with Community Contrib 
-pip install opencv-contrib-python
+python3 -m pip install --upgrade pip
+python3 -m pip install opencv-contrib-python
+
+# Install Dependencies
+python3 -m pip install tk
+python3 -m pip install python-vlc
+python3 -m pip install --upgrade Pillow
 
 # Clone Assistive Robot Workspace
 git clone https://github.com/ardhimaulidani/Assistive-Robot.git
@@ -42,7 +48,7 @@ sudo pip install RPi.GPIO
 pip install opencv-contrib-python
 
 # Clone Assistive Robot Workspace
-cd
+cd .
 git clone https://github.com/ardhimaulidani/Assistive-Robot.git
 ```
 
@@ -54,5 +60,5 @@ sudo python3 move.py
 
 # Run Aruco Detection Camera
 cd Assistive_Robot/qrcode
-python3 aruco_read.py
+python3 main.py
 ```
