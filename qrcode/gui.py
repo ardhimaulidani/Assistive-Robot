@@ -1,6 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 import vlc
+import platform
 import numpy
 from aruco_read import aruco
 
@@ -10,7 +11,8 @@ class gui(object):
         self.root = tk.Tk()
         self.root.title("Assistive Robot App")
         self.root.geometry("480x320")
-        self.root.iconbitmap("logo.ico")
+        if platform.system() == 'Windows':
+            self.root.iconbitmap("logo.ico")
         self.root.resizable(False, False)
 
         # self.destructor function gets fired when the window is closed
@@ -34,7 +36,7 @@ class gui(object):
 
         self.buttonFrame = tk.Frame(self.root, width=480, height=30)
         self.buttonFrame.place(x=0, y=290)
-        # self.text_box = tk.Text(self.buttonFrame, height=30, width=120)
+
         self.msgs = tk.StringVar()
         self.text_box = tk.Label(self.buttonFrame, textvariable=self.msgs)
         self.text_box.place(x=0, y=5)
@@ -50,9 +52,10 @@ class gui(object):
             self.playpauseButton.place_forget()
             self.closeButton.place_forget()
 
+        self.video.configure(image="")
         self.video.place_forget()
-        self.openVidButton.place(relx=0.25, rely=0.5, width=80, anchor="w")
-        self.openCamButton.place(relx=0.75, rely=0.5, width=80, anchor="e")
+        self.openVidButton.place(relx=0.25, rely=0.5, width=100, anchor="w")
+        self.openCamButton.place(relx=0.75, rely=0.5, width=100, anchor="e")
 
     def showCam(self):
         # self.createCamera()
@@ -94,20 +97,24 @@ class gui(object):
 
     def showVideo(self, input):
         if(self.cameraStatus != True):
-            self.video.place(relx=0.5, rely=0.5, anchor="center")
+            self.video.place(relwidth=0.9, relheight=0.9, relx=0.5, rely=0.5, anchor="center")
 
             instance = vlc.Instance()
             self.player = instance.media_player_new()
             media = instance.media_new(input)
             self.player.set_media(media)
-            self.player.set_hwnd(self.video.winfo_id())
+
+            # set the window id where to render VLC's video output
+            if platform.system() == 'Windows':
+                self.player.set_hwnd(self.video.winfo_id())
+            else:
+                self.player.set_xwindow(self.video.winfo_id()) # this line messes up windows
 
             self.openVidButton.place_forget()
             self.openCamButton.place_forget()
 
             self.playpauseButton.place(relx=0.5, rely=0.5, width=50, anchor="center")
             self.closeButton.place(relx=0.1, rely=0.5, anchor="w")
-            # self.pauseButton.place(relx=0.5, rely=0.5, width=50, anchor="center")
             
             self.player.play()
             self.playStatus = True
@@ -125,15 +132,6 @@ class gui(object):
             temp = "Play"
         self.playStatus = not self.playStatus    
         self.btnText.set(temp)
-
-    # def OnPlay(self):
-    #     self.playStatus = True
-    #     if self.player.play() == -1:
-    #         self.errorDialog("Unable to play.")
-    
-    # def OnPause(self):
-    #     self.playStatus = False
-    #     self.player.pause()
 
     def destructor(self):
         self.root.destroy()
