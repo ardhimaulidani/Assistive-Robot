@@ -5,7 +5,6 @@
 import math
 import io
 
-
 class diff_drive(object):
     def __init__(self, left_IN1, left_IN2, left_PWM, right_IN1, right_IN2, right_PWM):
         if self.is_raspberrypi():
