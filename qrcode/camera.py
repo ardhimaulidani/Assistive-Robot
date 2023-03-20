@@ -15,8 +15,6 @@
 '''
 
 import cv2 as cv
-from threading import Thread
-import numpy as np
 
 class camera(object):
 

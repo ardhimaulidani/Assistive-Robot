@@ -1,9 +1,6 @@
 # Aruco Detection Python Class
 # By Ardhika Maulidani
 
-import argparse
-import time
-import sys
 import cv2
 from camera import camera
 
@@ -11,7 +8,7 @@ class aruco(object):
 	def __init__(self, device):
 
 		self.device = device
-		self.cap = camera(self.device, 24, 426, 240)
+		self.cap = camera(self.device, 24, 320, 240)
 		
 		self.prev_time = 0
 		self.curr_time = 0
@@ -60,12 +57,12 @@ class aruco(object):
 					cv2.FONT_HERSHEY_SIMPLEX,
 					0.5, (0, 255, 0), 2)			
 
-		# time when we finish processing for this frame
-		self.curr_time = time.time()
+		# # time when we finish processing for this frame
+		# self.curr_time = time.time()
 	
-		# Calculating the fps
-		fps = 1/(self.curr_time-self.prev_time)
-		self.prev_time = self.curr_time
+		# # Calculating the fps
+		# fps = 1/(self.curr_time-self.prev_time)
+		# self.prev_time = self.curr_time
 	
 		# print(fps)
 		return(self.frame, ids)
@@ -78,7 +75,8 @@ if __name__ == "__main__":
 	vision = aruco(0)
 	while(1):
 		frame, a = vision.capture()
-		print(a)
+		cv2.imshow("DEBUG", frame)
+		# print(a)
 		k = cv2.waitKey(30) & 0xff
 		if k == 27:
 			break
