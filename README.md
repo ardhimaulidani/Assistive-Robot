@@ -20,19 +20,18 @@ https://github.com/git-for-windows/git/releases/download/v2.39.2.windows.1/Git-2
 python3 -m pip install --upgrade pip
 python3 -m pip install opencv-contrib-python
 
-# Install Dependencies
-python3 -m pip install tk
-python3 -m pip install python-vlc
-python3 -m pip install --upgrade Pillow
+# Install PyGame
+python3 -m pip install pygame
 
 # Clone Assistive Robot Workspace
 git clone https://github.com/ardhimaulidani/Assistive-Robot.git
 ```
 
-On Ubuntu 20.04 (Raspberry Pi)
+On Raspberry Pi
 ```bash
 # Install OpenCV Dependencies
 sudo apt-get update
+sudo apt install git
 sudo apt install python3-pip
 sudo apt install build-essential cmake git pkg-config libgtk-3-dev \
     libavcodec-dev libavformat-dev libswscale-dev libv4l-dev \
@@ -47,6 +46,9 @@ sudo pip install RPi.GPIO
 # Install OpenCV with Community Contrib 
 pip install opencv-contrib-python
 
+# Install PyGame
+python3 -m pip install pygame
+
 # Clone Assistive Robot Workspace
 cd .
 git clone https://github.com/ardhimaulidani/Assistive-Robot.git
@@ -54,11 +56,11 @@ git clone https://github.com/ardhimaulidani/Assistive-Robot.git
 
 ## Usage
 ```bash
-# Run Motor with Controller
-cd Assistive_Robot/robot_base
-sudo python3 move.py
+# Set GPIO Permission
+sudo chown root.gpio /dev/gpiomem
+sudo chmod g+rw /dev/gpiomem
 
-# Run Aruco Detection Camera
-cd Assistive_Robot/qrcode
+# Run Robot with GUI
+cd Assistive_Robot
 python3 main.py
 ```
