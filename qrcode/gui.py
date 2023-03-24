@@ -11,18 +11,62 @@ from aruco_read import aruco
 import cv2
 import numpy as np
 
+from itertools import cycle
+
 class Start:
   def __init__(self):
+    self.BLINK_EVENT = pygame.USEREVENT + 1
+
     self.GAME_FONT = pygame.freetype.Font("bin/prstartk.ttf", 13)
-    self.text_surf, text_rect = self.GAME_FONT.render("", (255,255,255))
-    self.title_surf, self.title_rect = self.GAME_FONT.render("ASSISTIVE ROBOT", (255,255,255), (0,0,0), 0, 0, 24)
-    self.start_surf, self.start_rect = self.GAME_FONT.render("PRESS START", (255,255,255), (0,0,0), 0, 0, 14)
+    self.title_surf, self.title_rect = self.GAME_FONT.render("ASSISTIVE-ROBOT", (255,255,255), (0,0,0), 0, 0, 24)
+    self.start_surf, self.start_rect = self.GAME_FONT.render("PRESS START BUTTON", (255,255,255), (0,0,0), 0, 0, 14)
+    self.copyright_surf, self.copyright_rect = self.GAME_FONT.render("\xa9 2023 ADINDA", (255,255,255), (0,0,0), 0, 0, 10)
+
+    self.robot_surf = pygame.image.load("bin/robot.png").convert()
+    self.robot_surf = pygame.transform.scale(self.robot_surf, (135, 175))
+
+    self.off_start_surf = pygame.Surface(self.start_rect.size)
+    self.off_start_surf.fill(pygame.Color("black"))
+    
+    self.blink_list = cycle([self.start_surf, self.off_start_surf])
+    self.blink_surf = next(self.blink_list)
+    pygame.time.set_timer(self.BLINK_EVENT, 1000)
 
   def draw(self, surf: pygame.Surface, pos: tuple, force_draw: bool = True) -> bool:
-    # surf.fill(pygame.Color("black"))
-    surf.blit(self.title_surf, ((480-self.title_rect[2])/2,(120-self.title_rect[3])/2))
-    surf.blit(self.start_surf, ((480-self.start_rect[2])/2,(320-self.start_rect[3])/2))
+    surf.blit(self.robot_surf, ((480-135)/2,(320-175)/2))
+    surf.blit(self.title_surf, ((480-self.title_rect[2])/2,(100-self.title_rect[3])/2))
+    surf.blit(self.blink_surf, ((480-self.start_rect[2])/2,260))
+    surf.blit(self.copyright_surf, ((480-self.copyright_rect[2])/2,305))
     return True         
+
+class Tutorial:
+  def __init__(self):
+    self.GAME_FONT = pygame.freetype.Font("bin/prstartk.ttf", 16)
+    self.title_surf, self.title_rect = self.GAME_FONT.render("How to Move:", (255,255,255), (0,0,0), 0, 0, 16)
+
+    self.arrow_surf = pygame.image.load("bin/arrow.png").convert()
+    self.arrow_surf = pygame.transform.scale(self.arrow_surf, (150, 100))
+
+    self.joystick_surf = pygame.image.load("bin/joystick.png").convert()
+    self.joystick_surf = pygame.transform.scale(self.joystick_surf, (100, 115))
+    
+    self.cross_surf = pygame.image.load("bin/cross.png").convert()
+    self.cross_surf = pygame.transform.scale(self.cross_surf, (23, 23))
+
+    self.text_surf, self.text_rect = self.GAME_FONT.render("Press    to Continue", (255,255,255), (0,0,0), 0, 0, 12)
+    self.analogtext_surf, self.analogtext_rect = self.GAME_FONT.render("Left Analog", (255,255,255), (0,0,0), 0, 0, 12)
+    self.arrowtext_surf, self.arrowtext_rect = self.GAME_FONT.render("Arrow Keys", (255,255,255), (0,0,0), 0, 0, 12)
+
+  def draw(self, surf: pygame.Surface, pos: tuple, force_draw: bool = True) -> bool:
+    surf.blit(self.title_surf, ((480-self.title_rect[2])/2,(100-self.title_rect[3])/2))
+    surf.blit(self.text_surf, ((480-self.text_rect[2])/2,300))
+    surf.blit(self.analogtext_surf, (57,235))
+    surf.blit(self.arrowtext_surf, (290,235))
+
+    surf.blit(self.cross_surf, (191,292))
+    surf.blit(self.arrow_surf, (273,(320-115)/2))
+    surf.blit(self.joystick_surf,(70, (320-115)/2))
+    return True
 
 class Video:
   def __init__(self, path):
@@ -52,7 +96,6 @@ class Video:
     self.alt_resize = pygame.transform.smoothscale
 
     self.GAME_FONT = pygame.freetype.Font("bin/prstartk.ttf", 13)
-    self.text_surf, text_rect = self.GAME_FONT.render("", (255,255,255))
     self.title_surf, self.title_rect = self.GAME_FONT.render("VIDEO PLAYER", (255,255,255), (0,0,0), 0, 0, 13)
 
     self.play_surf, self.play_rect = self.GAME_FONT.render("PLAY", (255,255,255), (0,0,0), 0, 0, 10)
@@ -165,6 +208,9 @@ class Camera(object):
     self.text_surf, text_rect = self.GAME_FONT.render("", (255,255,255))
     self.title_surf, self.title_rect = self.GAME_FONT.render("CAMERA VIEW", (255,255,255), (0,0,0), 0, 0, 13)
 
+    self.cross_surf = pygame.image.load("bin/cross.png").convert()
+    self.cross_surf = pygame.transform.scale(self.cross_surf, (23, 23))
+
   def processing(self):
     self.frame, self.ids = self.cap.capture()
     self.frame = np.fliplr(self.frame)
@@ -173,18 +219,25 @@ class Camera(object):
     self.frame_surf = pygame.surfarray.make_surface(self.frame)
 
     if(self.ids is not None):
-      temp = "Aruco IDs : " + str(self.ids[0]) + " detected!"
-      self.text_surf, rect = self.GAME_FONT.render(temp, (255,255,255), None, 0, 0, 10)    
+      temp = "IDs : " + str(self.ids[0]) + " detected!"
+      self.text_surf, text_rect = self.GAME_FONT.render(temp, (255,255,255), None, 0, 0, 10)
+      self.cmd_surf, cmd_rect = self.GAME_FONT.render("Show Video", (255,255,255), (0,0,0), 0, 0, 10)    
         
     elif (isinstance(self.ids, type(None))):
-      self.text_surf, rect = self.GAME_FONT.render("Searching...", (255,255,255), None, 0, 0, 10)
+      self.text_surf, text_rect = self.GAME_FONT.render("Searching...", (255,255,255), None, 0, 0, 10)
+    
+    return self.ids
 
   def close(self):
     self.cap.destructor()
 
   def draw(self, surf: pygame.Surface, pos: tuple, force_draw: bool = True) -> bool:
+    surf.fill(pygame.Color("black"), (0, 285, 480, 50))
+    if(self.ids is not None):
+      surf.blit(self.cross_surf, (325,292))
+      surf.blit(self.cmd_surf, (365,300))
+
     surf.blit(self.frame_surf, pos)
-    surf.fill(pygame.Color("black"), (0, 300, 480, 50))
     surf.blit(self.title_surf, ((480-self.title_rect[2])/2,(50-self.title_rect[3])/2))
     surf.blit(self.text_surf, (10, 300))
     return True       

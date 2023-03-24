@@ -3,7 +3,7 @@ import pygame
 from pygame.locals import *
 
 # Import hardware controller
-from move import diff_drive
+import move
 
 # Define constants for the screen width and height
 SCREEN_WIDTH = 480
@@ -17,81 +17,108 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 class joystick(object):
   def __init__(self):
-    joycount = pygame.joystick.get_count()
-    if joycount == 0:
-        print("This program only works with at least one joystick plugged in. No joysticks were detected.")
-        quit(1)
+    self.joycount = pygame.joystick.get_count()
     self.temp = []
-    for i in range(joycount):
-        self.temp.append(self.joystick_handler(i))
+    if(self.joycount == 0):
+      print("No joysticks were detected. Use keyboard control layout")
+      self.temp.append(self.joystick_handler(-1))
+    else:
+      for i in range(self.joycount):
+          self.temp.append(self.joystick_handler(i))
 
   def joystick_handler(self, id):
-    self.id = id
-    self.joy = pygame.joystick.Joystick(id)
-    self.name = self.joy.get_name()
-    self.joy.init()
-    self.numaxes    = self.joy.get_numaxes()
-    self.numballs   = self.joy.get_numballs()
-    self.numbuttons = self.joy.get_numbuttons()
-    self.numhats    = self.joy.get_numhats()
+    # Insert dummy data for controller
+    if(id == -1):
+      self.axis = [0,0,0,0,0,0]
+      self.ball = [0,0,0,0]
+      self.button = [0,0,0,0,0,0,0,0,0,0,0,0]
+      self.hat = [0,0,0,0]
+      return self
+      
+    else:
+      self.id = id
+      self.joy = pygame.joystick.Joystick(id)
+      self.name = self.joy.get_name()
+      self.joy.init()
+      self.numaxes    = self.joy.get_numaxes()
+      self.numballs   = self.joy.get_numballs()
+      self.numbuttons = self.joy.get_numbuttons()
+      self.numhats    = self.joy.get_numhats()
 
-    self.axis = []
-    for i in range(self.numaxes):
-        self.axis.append(self.joy.get_axis(i))
+      self.axis = []
+      for i in range(self.numaxes):
+          self.axis.append(self.joy.get_axis(i))
 
-    self.ball = []
-    for i in range(self.numballs):
-        self.ball.append(self.joy.get_ball(i))
+      self.ball = []
+      for i in range(self.numballs):
+          self.ball.append(self.joy.get_ball(i))
 
-    self.button = []
-    for i in range(self.numbuttons):
-        self.button.append(self.joy.get_button(i))
+      self.button = []
+      for i in range(self.numbuttons):
+          self.button.append(self.joy.get_button(i))
 
-    self.hat = []
-    for i in range(self.numhats):
-        self.hat.append(self.joy.get_hat(i))
-    return self #for self chaining
+      self.hat = []
+      for i in range(self.numhats):
+          self.hat.append(self.joy.get_hat(i))
+      return self #for self chaining
 
   def get_control(self):
-    key = None
-    isPressed = None
+    self.key = None
+    self.isPressed = None
     # for loop through the event queue
     for event in pygame.event.get():
       # Check for KEYDOWN event
       if event.type == KEYDOWN:
         # Check for pressed key
-        key = pygame.key.name(event.key)
+        self.key = pygame.key.name(event.key)
         # If the Esc key is pressed, then exit the main loop
         if event.key == K_ESCAPE:
-            pygame.quit()
-            exit()
+          pygame.quit()
+          exit()
+        elif event.key == K_RETURN:
+          self.key = "enter"
+        elif event.key == pygame.K_RIGHT:
+          self.key = "right"
+        elif event.key == pygame.K_LEFT:
+          self.key = "left"
+        elif event.key == pygame.K_UP:
+          self.key = "up"
+        elif event.key == pygame.K_DOWN:
+          self.key = "down"
+        elif event.key == pygame.K_SPACE:
+          self.key = "space"
 
       # Check for QUIT event. If QUIT, then set running to false.
       elif event.type == QUIT:
         pygame.quit()
         exit()
-        
-      elif event.type == JOYAXISMOTION:
-        self.temp[event.joy].axis[event.axis] = event.value
 
-      elif event.type == JOYBALLMOTION:
-        self.temp[event.joy].ball[event.ball] = event.rel
+      if(self.joycount >= 1):
+        if event.type == JOYAXISMOTION:
+          self.temp[event.joy].axis[event.axis] = event.value
 
-      elif event.type == JOYHATMOTION:
-        self.temp[event.joy].hat[event.hat] = event.value
+        elif event.type == JOYBALLMOTION:
+          self.temp[event.joy].ball[event.ball] = event.rel
 
-      elif event.type == JOYBUTTONUP:
-        self.temp[event.joy].button[event.button] = 0
+        elif event.type == JOYHATMOTION:
+          self.temp[event.joy].hat[event.hat] = event.value
 
-      elif event.type == JOYBUTTONDOWN:
-        isPressed = True
-        self.temp[event.joy].button[event.button] = 1
+        elif event.type == JOYBUTTONUP:
+          self.temp[event.joy].button[event.button] = 0
 
-    return(key, isPressed, self.temp)
+        elif event.type == JOYBUTTONDOWN:
+          self.isPressed = True
+          self.temp[event.joy].button[event.button] = 1
+
+      else:
+        pass
+
+    return(self.key, self.isPressed, self.temp)
+    
 
 if __name__ == "__main__":
   gamepad = joystick()
-  drive = diff_drive(17, 27, 13, 23, 24, 12)
+  drive = move(17, 27, 13, 23, 24, 12)
 
   while(running):
     # for loop through the event queue
@@ -99,8 +126,9 @@ if __name__ == "__main__":
     # Fill the screen with black
     screen.fill((0, 0, 0))
 
-    a, b = drive.joystickToDiff(joy[0].axis[0], -joy[0].axis[1])
-    
+    # x, y, pwm = drive.joystickToDiff(joy[0].axis[0], -joy[0].axis[1])
+    # drive.move(x,y,pwm)
+    print()
     # Update the display
     pygame.display.flip()
     
