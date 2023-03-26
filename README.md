@@ -49,6 +49,12 @@ pip install opencv-contrib-python
 # Install PyGame
 python3 -m pip install pygame
 
+# Install Video Player
+sudo apt install ffmpeg
+pip install ffmpeg-python
+python3 -m pip install pymediainfo
+python3 -m pip install ffpyplayer
+
 # Clone Assistive Robot Workspace
 cd .
 git clone https://github.com/ardhimaulidani/Assistive-Robot.git
