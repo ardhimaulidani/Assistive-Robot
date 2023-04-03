@@ -28,7 +28,6 @@ class moveDiff(object):
                 rad = math.radians(90)
                 
             angle = rad * 180 / math.pi
-            print(angle)
             # max of y or x is the movement
             mov = max(math.fabs(y), math.fabs(x))
             pwm = self.map(mov, 0, 1, 0, maxSpeed)
@@ -118,8 +117,3 @@ class moveDiff(object):
             v = in_max
         return (v - in_min) * (out_max - out_min) // (in_max - in_min) + out_min
     
-    def div(x, y):
-        if y: 
-            return x / y
-        else:
-            return 0
