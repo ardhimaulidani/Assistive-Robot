@@ -50,6 +50,9 @@ pip install opencv-contrib-python
 python3 -m pip install pygame
 
 # Install Video Player
+sudo apt install ffmpeg libavcodec-dev libavdevice-dev libavfilter-dev libavformat-dev \
+libavutil-dev libswscale-dev libswresample-dev libpostproc-dev libsdl2-dev libsdl2-2.0-0 \
+libsdl2-mixer-2.0-0 libsdl2-mixer-dev python3-dev
 sudo apt install ffmpeg
 pip install ffmpeg-python
 python3 -m pip install pymediainfo
@@ -62,10 +65,6 @@ git clone https://github.com/ardhimaulidani/Assistive-Robot.git
 
 ## Usage
 ```bash
-# Set GPIO Permission
-sudo chown root.gpio /dev/gpiomem
-sudo chmod g+rw /dev/gpiomem
-
 # Run Robot with GUI
 cd Assistive_Robot
 python3 main.py
