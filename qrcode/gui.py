@@ -14,33 +14,28 @@ import numpy as np
 from itertools import cycle
 
 class Start:
-  def __init__(self):
-    self.BLINK_EVENT = pygame.USEREVENT + 1
+  def __init__(self, VideoInfo):
+    self.VideoInfo = VideoInfo
 
     self.GAME_FONT = pygame.freetype.Font("bin/prstartk.ttf", 13)
-    self.title_surf, self.title_rect = self.GAME_FONT.render("ASSISTIVE-ROBOT", (255,255,255), (0,0,0), 0, 0, 24)
-    self.start_surf, self.start_rect = self.GAME_FONT.render("PRESS START BUTTON", (255,255,255), (0,0,0), 0, 0, 14)
-    self.copyright_surf, self.copyright_rect = self.GAME_FONT.render("\xa9 2023 ADINDA", (255,255,255), (0,0,0), 0, 0, 10)
+    self.title_surf, self.title_rect = self.GAME_FONT.render("ASSISTIVE-ROBOT", (255,255,255), (0,0,0), 0, 0, 26)
+    self.start_surf, self.start_rect = self.GAME_FONT.render("PRESS START BUTTON", (255,255,255), (0,0,0), 0, 0, 15)
+    self.copyright_surf, self.copyright_rect = self.GAME_FONT.render("\xa9 2023 ADINDA", (255,255,255), (0,0,0), 0, 0, 12)
 
     self.robot_surf = pygame.image.load("bin/robot.png").convert()
-    self.robot_surf = pygame.transform.scale(self.robot_surf, (135, 175))
-
-    self.off_start_surf = pygame.Surface(self.start_rect.size)
-    self.off_start_surf.fill(pygame.Color("black"))
-    
-    self.blink_list = cycle([self.start_surf, self.off_start_surf])
-    self.blink_surf = next(self.blink_list)
-    pygame.time.set_timer(self.BLINK_EVENT, 1000)
+    self.robot_surf = pygame.transform.scale(self.robot_surf, (150, 200))
 
   def draw(self, surf: pygame.Surface, pos: tuple, force_draw: bool = True) -> bool:
-    surf.blit(self.robot_surf, ((480-135)/2,(320-175)/2))
-    surf.blit(self.title_surf, ((480-self.title_rect[2])/2,(100-self.title_rect[3])/2))
-    surf.blit(self.blink_surf, ((480-self.start_rect[2])/2,260))
-    surf.blit(self.copyright_surf, ((480-self.copyright_rect[2])/2,305))
+    surf.blit(self.title_surf, ((self.VideoInfo.current_w-self.title_rect[2])/2, (150-self.title_rect[3])/2))
+    surf.blit(self.robot_surf, ((self.VideoInfo.current_w-150)/2,(self.VideoInfo.current_h-200)/2))
+    surf.blit(self.start_surf, ((self.VideoInfo.current_w-self.start_rect[2])/2,self.VideoInfo.current_h+self.start_rect[3]-125))
+    surf.blit(self.copyright_surf, ((self.VideoInfo.current_w-self.copyright_rect[2])/2,self.VideoInfo.current_h-self.copyright_rect[3]))
     return True         
 
 class Tutorial:
-  def __init__(self):
+  def __init__(self, VideoInfo):
+    self.VideoInfo = VideoInfo
+
     self.GAME_FONT = pygame.freetype.Font("bin/prstartk.ttf", 16)
     self.title_surf, self.title_rect = self.GAME_FONT.render("How to Move:", (255,255,255), (0,0,0), 0, 0, 16)
 
@@ -58,22 +53,24 @@ class Tutorial:
     self.arrowtext_surf, self.arrowtext_rect = self.GAME_FONT.render("Arrow Keys", (255,255,255), (0,0,0), 0, 0, 12)
 
   def draw(self, surf: pygame.Surface, pos: tuple, force_draw: bool = True) -> bool:
-    surf.blit(self.title_surf, ((480-self.title_rect[2])/2,(100-self.title_rect[3])/2))
-    surf.blit(self.text_surf, ((480-self.text_rect[2])/2,300))
-    surf.blit(self.analogtext_surf, (57,235))
-    surf.blit(self.arrowtext_surf, (290,235))
+    surf.blit(self.title_surf, ((self.VideoInfo.current_w-self.title_rect[2])/2, (175-self.title_rect[3])/2))
+    surf.blit(self.text_surf, ((self.VideoInfo.current_w-self.text_rect[2])/2, self.VideoInfo.current_h-50))
+    surf.blit(self.arrowtext_surf, (((self.VideoInfo.current_w/2)-self.arrowtext_rect[2])/2, self.VideoInfo.current_h/2+100))
+    surf.blit(self.analogtext_surf, ((3*self.VideoInfo.current_w-2*self.analogtext_rect[2])/4, self.VideoInfo.current_h/2+100))
 
-    surf.blit(self.cross_surf, (191,292))
-    surf.blit(self.arrow_surf, (273,(320-115)/2))
-    surf.blit(self.joystick_surf,(70, (320-115)/2))
+    surf.blit(self.cross_surf, ((self.VideoInfo.current_w-self.text_rect[2])/2+69,self.VideoInfo.current_h-8-50))
+
+    surf.blit(self.arrow_surf, (((self.VideoInfo.current_w/2)-150)/2,(self.VideoInfo.current_h-115)/2))
+    surf.blit(self.joystick_surf,((3*self.VideoInfo.current_w-2*100)/4, (self.VideoInfo.current_h-115)/2))
     return True
 
 class Video:
-  def __init__(self, path):
+  def __init__(self, path, VideoInfo):
     if not os.path.exists(path):
       raise FileNotFoundError(ENOENT, os.strerror(ENOENT), path)
     set_loglevel("quiet")
-        
+    
+    self.VideoInfo = VideoInfo
     self.path = path 
     self.name = os.path.splitext(os.path.basename(path))[0]
     
@@ -182,27 +179,28 @@ class Video:
   def draw(self, surf: pygame.Surface, pos: tuple, force_draw: bool = True) -> bool:
     if self.active and (self._update() or force_draw):
       surf.blit(self.frame_surf, pos)
-      surf.blit(self.title_surf, ((480-self.title_rect[2])/2,(50-self.title_rect[3])/2))
+      surf.blit(self.title_surf, ((self.VideoInfo.current_w-self.title_rect[2])/2,(100-self.title_rect[3])/2))
       
-      surf.blit(self.cross_surf, (60,292))
-      surf.fill(pygame.Color("black"), (100, 299, self.pause_rect[2], self.pause_rect[3]))
+      surf.blit(self.cross_surf, (pos[0],self.VideoInfo.current_h-8-35))
+      surf.fill(pygame.Color("black"), (pos[0]+40, self.VideoInfo.current_h-35, self.pause_rect[2], self.pause_rect[3]))
       if(self.get_paused()):
-        surf.blit(self.play_surf, (100, 299))
+        surf.blit(self.play_surf, (pos[0]+40, self.VideoInfo.current_h-35))
       else:
-        surf.blit(self.pause_surf, (100, 299))
+        surf.blit(self.pause_surf, (pos[0]+40, self.VideoInfo.current_h-35))
 
-      surf.blit(self.circle_surf, (185,292))
-      surf.blit(self.replay_surf, (225, 299))
+      surf.blit(self.circle_surf, ((self.VideoInfo.current_w-self.replay_rect[2]+63)/2-40, self.VideoInfo.current_h-8-35))
+      surf.blit(self.replay_surf, ((self.VideoInfo.current_w-self.replay_rect[2]+63)/2, self.VideoInfo.current_h-35))
 
-      surf.blit(self.triangle_surf, (330,292))
-      surf.blit(self.quit_surf, (370, 299))
+      surf.blit(self.triangle_surf, (self.VideoInfo.current_w-self.quit_rect[2]-pos[0]-40, self.VideoInfo.current_h-8-35))
+      surf.blit(self.quit_surf, (self.VideoInfo.current_w-self.quit_rect[2]-pos[0], self. VideoInfo.current_h-35))
 
       return True
           
     return False
 
 class Camera(object):
-  def __init__(self, device):
+  def __init__(self, device, VideoInfo):
+    self.VideoInfo = VideoInfo
     self.cap = aruco(device)
     self.GAME_FONT = pygame.freetype.Font("bin/prstartk.ttf", 13)
     self.text_surf, text_rect = self.GAME_FONT.render("", (255,255,255))
@@ -221,7 +219,7 @@ class Camera(object):
     if(self.ids is not None):
       temp = "IDs : " + str(self.ids[0]) + " detected!"
       self.text_surf, text_rect = self.GAME_FONT.render(temp, (255,255,255), None, 0, 0, 10)
-      self.cmd_surf, cmd_rect = self.GAME_FONT.render("Show Video", (255,255,255), (0,0,0), 0, 0, 10)    
+      self.cmd_surf, self.cmd_rect = self.GAME_FONT.render("Show Video", (255,255,255), (0,0,0), 0, 0, 10)    
         
     elif (isinstance(self.ids, type(None))):
       self.text_surf, text_rect = self.GAME_FONT.render("Searching...", (255,255,255), None, 0, 0, 10)
@@ -232,12 +230,12 @@ class Camera(object):
     self.cap.destructor()
 
   def draw(self, surf: pygame.Surface, pos: tuple, force_draw: bool = True) -> bool:
-    surf.fill(pygame.Color("black"), (0, 285, 480, 50))
+    surf.fill(pygame.Color("black"), (0, self.VideoInfo.current_h-8-35, self.VideoInfo.current_w, 35))
     if(self.ids is not None):
-      surf.blit(self.cross_surf, (325,292))
-      surf.blit(self.cmd_surf, (365,300))
+      surf.blit(self.cross_surf, (self.VideoInfo.current_w-self.cmd_rect[2]-65,self.VideoInfo.current_h-8-35))
+      surf.blit(self.cmd_surf, (self.VideoInfo.current_w-self.cmd_rect[2]-25, self.VideoInfo.current_h-35))
 
     surf.blit(self.frame_surf, pos)
-    surf.blit(self.title_surf, ((480-self.title_rect[2])/2,(50-self.title_rect[3])/2))
-    surf.blit(self.text_surf, (10, 300))
-    return True       
+    surf.blit(self.title_surf, ((self.VideoInfo.current_w-self.title_rect[2])/2,(100-self.title_rect[3])/2))
+    surf.blit(self.text_surf, (10, self.VideoInfo.current_h-35))
+    return True      

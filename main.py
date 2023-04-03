@@ -11,11 +11,11 @@ from controller import joystick
 from move import moveDiff
 
 #  Define GUI Window Size
-WIN_DISPLAY_WIDTH   = 480
-WIN_DISPLAY_HEIGHT  = 320
+WIN_DISPLAY_WIDTH   = 640
+WIN_DISPLAY_HEIGHT  = 480
 
-VID_DISPLAY_WIDTH   = 352
-VID_DISPLAY_HEIGHT  = 240
+VID_DISPLAY_WIDTH   = 480
+VID_DISPLAY_HEIGHT  = 320
 
 # Init PyGame
 pygame.init()
@@ -27,12 +27,12 @@ pygame.display.set_icon(programIcon)
 pygame.display.set_caption('Assistive Robot App - v0.75b')
 
 # Init Display Size and Clock
-win = pygame.display.set_mode((WIN_DISPLAY_WIDTH, WIN_DISPLAY_HEIGHT))
+win = pygame.display.set_mode((WIN_DISPLAY_WIDTH, WIN_DISPLAY_HEIGHT), pygame.FULLSCREEN)
 clock = pygame.time.Clock()
 
 # Init Video Dictionaries
 vidDicts = {
-  0: "media/test.m4v",
+  0: "media/test.mp4",
   1: "media/1.m4v",
   2: "media/1.m4v",
   3: "media/1.m4v"
@@ -42,7 +42,8 @@ if __name__ == "__main__":
 
   # Initialize Joystick
   gamepad = joystick()
-
+  infoObject = pygame.display.Info()
+  
   # Initialize Robot Hardware
   drive = moveDiff(17, 27, 13, 23, 24, 12)
 
@@ -50,8 +51,8 @@ if __name__ == "__main__":
   clock.tick(60)
   
   # Initialize Start Screen
-  startScreen = Start()
-  tutorialScreen = Tutorial()
+  startScreen = Start(infoObject)
+  tutorialScreen = Tutorial(infoObject)
   startStatus = True
 
   while startStatus:
@@ -81,7 +82,7 @@ if __name__ == "__main__":
   while(1):
     while camStatus:
       # Initialize Camera View
-      cam = Camera(0)
+      cam = Camera(0, infoObject)
       camStatus = True
       while(1):
         # Initialize Control Input
@@ -94,7 +95,7 @@ if __name__ == "__main__":
         x, y, pwm = drive.joystickToDiff(joy[0].axis[0], -joy[0].axis[1], 35)
         drive.move(x, y, pwm)
 
-        cam.draw(win, (80, 40), force_draw=False)
+        cam.draw(win, ((infoObject.current_w-320)/2, (infoObject.current_h-240)/2), force_draw=False)
         pygame.display.update()
 
         # Control Layout
@@ -107,8 +108,9 @@ if __name__ == "__main__":
 
     while camStatus is False:
       # provide video class with the path to your video
-      vid = Video(vidDicts[int(ids)])
+      vid = Video(vidDicts[int(ids)], infoObject)
       vid.set_size((VID_DISPLAY_WIDTH, VID_DISPLAY_HEIGHT))
+      vid.set_volume(0.8)
 
       while(1):
         # Initialize Control Input
