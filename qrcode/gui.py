@@ -29,7 +29,7 @@ class Start:
     surf.blit(self.title_surf, ((self.VideoInfo.current_w-self.title_rect[2])/2, (150-self.title_rect[3])/2))
     surf.blit(self.robot_surf, ((self.VideoInfo.current_w-150)/2,(self.VideoInfo.current_h-200)/2))
     surf.blit(self.start_surf, ((self.VideoInfo.current_w-self.start_rect[2])/2,self.VideoInfo.current_h+self.start_rect[3]-125))
-    surf.blit(self.copyright_surf, ((self.VideoInfo.current_w-self.copyright_rect[2])/2,self.VideoInfo.current_h-self.copyright_rect[3]))
+    surf.blit(self.copyright_surf, ((self.VideoInfo.current_w-self.copyright_rect[2])/2,self.VideoInfo.current_h-35))
     return True         
 
 class Tutorial:

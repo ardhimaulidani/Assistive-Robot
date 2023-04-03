@@ -3,10 +3,10 @@ import pygame
 from pygame.locals import *
 
 # Insert Include Path
-sys.path.insert(0, 'qrcode')
+sys.path.insert(0, './qrcode')
 from gui import Video, Camera, Start, Tutorial
 
-sys.path.insert(0, 'robot_base')
+sys.path.insert(0, './robot_base')
 from controller import joystick
 from move import moveDiff
 
