@@ -19,6 +19,8 @@ class joystick(object):
   def __init__(self):
     self.joycount = pygame.joystick.get_count()
     self.temp = []
+    self.key = None
+    
     if(self.joycount == 0):
       print("No joysticks were detected. Use keyboard control layout")
       self.temp.append(self.joystick_handler(-1))
@@ -63,33 +65,34 @@ class joystick(object):
       return self #for self chaining
 
   def get_control(self):
-    self.key = None
+    
     self.isPressed = None
     # for loop through the event queue
     for event in pygame.event.get():
       # Check for KEYDOWN event
-      if event.type == KEYDOWN:
-        # Check for pressed key
-        self.key = pygame.key.name(event.key)
-        # If the Esc key is pressed, then exit the main loop
-        if event.key == K_ESCAPE:
-          pygame.quit()
-          exit()
-        elif event.key == K_RETURN:
-          self.key = "enter"
-        elif event.key == pygame.K_RIGHT:
-          self.key = "right"
-        elif event.key == pygame.K_LEFT:
-          self.key = "left"
-        elif event.key == pygame.K_UP:
-          self.key = "up"
-        elif event.key == pygame.K_DOWN:
-          self.key = "down"
-        elif event.key == pygame.K_SPACE:
-          self.key = "space"
+      
+      # if event.type == KEYDOWN:
+      #   # Check for pressed key
+      self.key = pygame.key.get_pressed()
+      # If the Esc key is pressed, then exit the main loop
+      if self.key[pygame.K_ESCAPE]:
+        pygame.quit()
+        exit()
+      elif self.key[pygame.K_RETURN]:
+        self.key = "enter"
+      elif self.key[pygame.K_RIGHT]:
+        self.key = "right"
+      elif self.key[pygame.K_LEFT]:
+        self.key = "left"
+      elif self.key[pygame.K_UP]:
+        self.key = "up"
+      elif self.key[pygame.K_DOWN]:
+        self.key = "down"
+      elif self.key[pygame.K_SPACE]:
+        self.key = "space"
 
       # Check for QUIT event. If QUIT, then set running to false.
-      elif event.type == QUIT:
+      if event.type == QUIT:
         pygame.quit()
         exit()
 

@@ -27,7 +27,7 @@ pygame.display.set_icon(programIcon)
 pygame.display.set_caption('Assistive Robot App - v0.75b')
 
 # Init Display Size and Clock
-win = pygame.display.set_mode((WIN_DISPLAY_WIDTH, WIN_DISPLAY_HEIGHT), pygame.FULLSCREEN)
+win = pygame.display.set_mode((WIN_DISPLAY_WIDTH, WIN_DISPLAY_HEIGHT))
 clock = pygame.time.Clock()
 
 # Init Video Dictionaries
@@ -45,7 +45,7 @@ if __name__ == "__main__":
   infoObject = pygame.display.Info()
   
   # Initialize Robot Hardware
-  drive = moveDiff(17, 27, 13, 23, 24, 12)
+  drive = moveDiff(23, 24, 12, 17, 27, 13)
 
   # your program frame rate does not affect video playback
   clock.tick(60)
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     key, isPressed, joy = gamepad.get_control()
     startScreen.draw(win, (0,0))
     pygame.display.update()
-  
+    
     # Control Layout
     if (key == "enter" or (joy[0].button[9] == 1 and isPressed == True)):
       tutorialStatus = True
@@ -92,9 +92,12 @@ if __name__ == "__main__":
         ids = cam.processing()
         
         # Convert joystick to pwm
-        x, y, pwm = drive.joystickToDiff(joy[0].axis[0], -joy[0].axis[1], 35)
-        drive.move(x, y, pwm)
-
+        if(gamepad.joycount != 0):
+          x, y, pwm = drive.joystickToDiff(joy[0].axis[0], -joy[0].axis[1], 35)
+          drive.move(x, y, pwm)
+        else:
+          drive.moveKeyboard(key)
+          
         cam.draw(win, ((infoObject.current_w-320)/2, (infoObject.current_h-240)/2), force_draw=False)
         pygame.display.update()
 

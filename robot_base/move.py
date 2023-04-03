@@ -43,30 +43,58 @@ class moveDiff(object):
             if(x == 1 and y == 1):
                 self.motorRight.forward(pwm)
                 self.motorLeft.forward(pwm)
-                print("FORWARD")
+                # print("FORWARD")
 
             elif(x == -1 and y == -1):
                 self.motorRight.reverse(pwm)
                 self.motorLeft.reverse(pwm)
-                print("BACKWARD")
+                # print("BACKWARD")
 
             elif(x == 0 and y == 1):
                 self.motorRight.forward(pwm)
                 self.motorLeft.reverse(pwm)
-                print("LEFT")
+                # print("LEFT")
 
             elif(x == 1 and y == 0):
                 self.motorRight.reverse(pwm)
                 self.motorLeft.forward(pwm)
-                print("RIGHT")
+                # print("RIGHT")
             
             else:
                 self.motorRight.stop()
                 self.motorLeft.stop()  
-                print("STOP") 
+                # print("STOP") 
         else:
             pass   
 
+    def moveKeyboard(self, key):
+        if(self.is_raspberrypi()):
+            if(key == "up"):
+                self.motorRight.forward(15)
+                self.motorLeft.forward(15)
+                # print("FORWARD")
+
+            elif(key == "down"):
+                self.motorRight.reverse(15)
+                self.motorLeft.reverse(15)
+                # print("BACKWARD")
+
+            elif(key == "left"):
+                self.motorRight.forward(15)
+                self.motorLeft.reverse(0)
+                # print("LEFT")
+
+            elif(key == "right"):
+                self.motorRight.reverse(0)
+                self.motorLeft.forward(15)
+                # print("RIGHT")
+            
+            else:
+                self.motorRight.stop()
+                self.motorLeft.stop()  
+                # print("STOP") 
+        else:
+            pass          
     def is_raspberrypi(self):
         try:
             with io.open('/sys/firmware/devicetree/base/model', 'r') as m:
