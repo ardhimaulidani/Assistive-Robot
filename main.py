@@ -27,15 +27,21 @@ pygame.display.set_icon(programIcon)
 pygame.display.set_caption('Assistive Robot App - v0.75b')
 
 # Init Display Size and Clock
-win = pygame.display.set_mode((WIN_DISPLAY_WIDTH, WIN_DISPLAY_HEIGHT))
+win = pygame.display.set_mode((WIN_DISPLAY_WIDTH, WIN_DISPLAY_HEIGHT), pygame.FULLSCREEN)
 clock = pygame.time.Clock()
 
 # Init Video Dictionaries
 vidDicts = {
   0: "media/test.mp4",
-  1: "media/1.m4v",
-  2: "media/1.m4v",
-  3: "media/1.m4v"
+  1: "media/1.mp4",
+  2: "media/2.mp4",
+  3: "media/3.mp4",
+  4: "media/4.mp4",
+  5: "media/5.mp4",
+  6: "media/6.mp4",
+  7: "media/7.mp4",
+  8: "media/8.mp4",
+  9: "media/9.mp4",
 }
 
 if __name__ == "__main__":
@@ -61,7 +67,7 @@ if __name__ == "__main__":
     pygame.display.update()
     
     # Control Layout
-    if (key == "enter" or (joy[0].button[9] == 1 and isPressed == True)):
+    if ((key == "enter" or joy[0].button[9] == 1) and isPressed == True):
       tutorialStatus = True
       startScreen = False
       win.fill(pygame.Color("black"))
@@ -73,7 +79,7 @@ if __name__ == "__main__":
     pygame.display.update()
     
     # Control Layout
-    if (key == "space" or (joy[0].button[0] == 1 and isPressed == True)):
+    if ((key == "space" or joy[0].button[0] == 1) and isPressed == True):
       tutorialStatus = False
       camStatus = True
       win.fill(pygame.Color("black"))
@@ -87,7 +93,7 @@ if __name__ == "__main__":
       while(1):
         # Initialize Control Input
         key, isPressed, joy = gamepad.get_control()
-    
+        
         # Show Camera View on pygame frame
         ids = cam.processing()
         
@@ -102,7 +108,7 @@ if __name__ == "__main__":
         pygame.display.update()
 
         # Control Layout
-        if ((key == "space" or (joy[0].button[0] == 1 and isPressed)) and ids is not None):
+        if (((key == "space" or joy[0].button[0] == 1) and isPressed) and ids is not None):
           print(int(ids))
           camStatus = False
           cam.close()
@@ -124,14 +130,14 @@ if __name__ == "__main__":
         pygame.display.update()
 
         # Control Layout
-        if (key == "q" or (joy[0].button[2] == 1 and isPressed == True)):
+        if ((key == "q" or joy[0].button[2] == 1) and isPressed == True):
             camStatus = True
             vid.close()
             win.fill(pygame.Color("black"))
             break
-        elif (key == "r" or (joy[0].button[1] == 1 and isPressed == True)):
+        elif ((key == "r" or joy[0].button[1] == 1) and isPressed == True):
           vid.restart()           #rewind video to beginning when r or triangle is pressed
-        elif (key == "space" or (joy[0].button[0] == 1 and isPressed == True)):
+        elif ((key == "space" or joy[0].button[0] == 1) and isPressed == True):
           vid.toggle_pause()      #pause/plays video
         elif key == "right":
           vid.seek(15)            #skip 15 seconds in video

@@ -17,13 +17,18 @@ class moveDiff(object):
 
     def joystickToDiff(self, x, y, maxSpeed=50):
         # Joystick Deadzone
+        # print(x,y)
         if (x >= -0.12 and x <= 0.12) and (y >= -0.12 and y <= 0.12):
             return(0, 0, 0)
         
         else:
-            rad = math.atan(y/x)
+            try:
+                rad = math.atan(y/x)
+            except ZeroDivisionError:
+                rad = math.radians(90)
+                
             angle = rad * 180 / math.pi
-
+            print(angle)
             # max of y or x is the movement
             mov = max(math.fabs(y), math.fabs(x))
             pwm = self.map(mov, 0, 1, 0, maxSpeed)
@@ -112,3 +117,9 @@ class moveDiff(object):
         if v > in_max:
             v = in_max
         return (v - in_min) * (out_max - out_min) // (in_max - in_min) + out_min
+    
+    def div(x, y):
+        if y: 
+            return x / y
+        else:
+            return 0

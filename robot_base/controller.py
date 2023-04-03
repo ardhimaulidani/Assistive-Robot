@@ -3,7 +3,7 @@ import pygame
 from pygame.locals import *
 
 # Import hardware controller
-import move
+from move import moveDiff
 
 # Define constants for the screen width and height
 SCREEN_WIDTH = 480
@@ -65,34 +65,40 @@ class joystick(object):
       return self #for self chaining
 
   def get_control(self):
-    
     self.isPressed = None
     # for loop through the event queue
     for event in pygame.event.get():
-      # Check for KEYDOWN event
-      
-      # if event.type == KEYDOWN:
-      #   # Check for pressed key
+      # Check for KEYDOWN event      
       self.key = pygame.key.get_pressed()
       # If the Esc key is pressed, then exit the main loop
-      if self.key[pygame.K_ESCAPE]:
-        pygame.quit()
-        exit()
-      elif self.key[pygame.K_RETURN]:
-        self.key = "enter"
-      elif self.key[pygame.K_RIGHT]:
-        self.key = "right"
-      elif self.key[pygame.K_LEFT]:
-        self.key = "left"
-      elif self.key[pygame.K_UP]:
-        self.key = "up"
-      elif self.key[pygame.K_DOWN]:
-        self.key = "down"
-      elif self.key[pygame.K_SPACE]:
-        self.key = "space"
+      if (event.type == pygame.KEYDOWN):
+        # Check for pressed key
+        if self.key[pygame.K_RIGHT]:
+          self.key = "right"
+        elif self.key[pygame.K_LEFT]:
+          self.key = "left"
+        elif self.key[pygame.K_UP]:
+          self.key = "up"
+        elif self.key[pygame.K_DOWN]:
+          self.key = "down"
+        elif self.key[pygame.K_ESCAPE]:
+          pygame.quit()
+          exit()
+        elif self.key[pygame.K_RETURN]:
+          self.key = "enter"
+          self.isPressed = True
+        elif self.key[pygame.K_SPACE]:
+          self.key = "space"
+          self.isPressed = True
+        elif self.key[pygame.K_q]:
+          self.key = "q"
+          self.isPressed = True
+        elif self.key[pygame.K_r]:
+          self.key = "r"
+          self.isPressed = True
 
       # Check for QUIT event. If QUIT, then set running to false.
-      if event.type == QUIT:
+      elif event.type == QUIT:
         pygame.quit()
         exit()
 
@@ -121,7 +127,7 @@ class joystick(object):
 
 if __name__ == "__main__":
   gamepad = joystick()
-  drive = move(17, 27, 13, 23, 24, 12)
+  drive = moveDiff(17, 27, 13, 23, 24, 12)
 
   while(running):
     # for loop through the event queue
@@ -129,9 +135,9 @@ if __name__ == "__main__":
     # Fill the screen with black
     screen.fill((0, 0, 0))
 
-    # x, y, pwm = drive.joystickToDiff(joy[0].axis[0], -joy[0].axis[1])
+    x, y, pwm = drive.joystickToDiff(joy[0].axis[0], -joy[0].axis[1])
     # drive.move(x,y,pwm)
-    print()
+    # print(x,y)
     # Update the display
     pygame.display.flip()
     
