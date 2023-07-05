@@ -7,6 +7,7 @@ import io
 
 class moveDiff(object):
     def __init__(self, left_IN1, left_IN2, left_PWM, right_IN1, right_IN2, right_PWM):
+        # Init Only if System is Raspberry Pi
         if self.is_raspberrypi():
             from motor_driver import motor
             self.motorLeft = motor(left_IN1, left_IN2, left_PWM)
@@ -17,22 +18,21 @@ class moveDiff(object):
 
     def joystickToDiff(self, x, y, maxSpeed=50):
         # Joystick Deadzone
-        # print(x,y)
         if (x >= -0.12 and x <= 0.12) and (y >= -0.12 and y <= 0.12):
             return(0, 0, 0)
-        
+        # Get Movement from Joystick
         else:
             try:
                 rad = math.atan(y/x)
             except ZeroDivisionError:
                 rad = math.radians(90)
                 
+            # Get Angle Value from Joystick
             angle = rad * 180 / math.pi
-            # max of y or x is the movement
             mov = max(math.fabs(y), math.fabs(x))
             pwm = self.map(mov, 0, 1, 0, maxSpeed)
 
-            # Up Region
+            # Divide Joystick into 4 Regions
             if(((angle >= -90 and angle <= -45) or (angle <=90 and angle >= 45)) and y>=0.12):
                 return(1, 1, pwm)
             elif(((angle >= -90 and angle <= -45) or (angle <=90 and angle >= 45)) and y<=-0.12):
@@ -43,63 +43,67 @@ class moveDiff(object):
                 return(1, 0, pwm)
                 
     def move(self, x, y, pwm):
+        # Diffential Movement from Analog
         if(self.is_raspberrypi()):
             if(x == 1 and y == 1):
+                # Forward Move
                 self.motorRight.forward(pwm)
                 self.motorLeft.forward(pwm)
-                # print("FORWARD")
 
             elif(x == -1 and y == -1):
+                # Backward Move
                 self.motorRight.reverse(pwm)
                 self.motorLeft.reverse(pwm)
-                # print("BACKWARD")
 
             elif(x == 0 and y == 1):
+                # Left Move
                 self.motorRight.forward(pwm)
                 self.motorLeft.reverse(pwm)
-                # print("LEFT")
 
             elif(x == 1 and y == 0):
+                # Right Move
                 self.motorRight.reverse(pwm)
                 self.motorLeft.forward(pwm)
-                # print("RIGHT")
             
             else:
+                # Stop Move
                 self.motorRight.stop()
                 self.motorLeft.stop()  
-                # print("STOP") 
         else:
             pass   
 
     def moveKeyboard(self, key):
+        # Diffential Movement from Keyboard Keys
         if(self.is_raspberrypi()):
             if(key == "up"):
+                # Forward Move
                 self.motorRight.forward(15)
                 self.motorLeft.forward(15)
-                # print("FORWARD")
 
             elif(key == "down"):
+                # Backward Move
                 self.motorRight.reverse(15)
                 self.motorLeft.reverse(15)
-                # print("BACKWARD")
 
             elif(key == "left"):
+                # Left Move
                 self.motorRight.forward(15)
                 self.motorLeft.reverse(0)
-                # print("LEFT")
 
             elif(key == "right"):
+                # Right Move
                 self.motorRight.reverse(0)
                 self.motorLeft.forward(15)
-                # print("RIGHT")
             
             else:
+                # Stop Move
                 self.motorRight.stop()
                 self.motorLeft.stop()  
-                # print("STOP") 
         else:
             pass          
+            
     def is_raspberrypi(self):
+        # Check if Raspberry Pi is the System
         try:
             with io.open('/sys/firmware/devicetree/base/model', 'r') as m:
                 if 'raspberry pi' in m.read().lower(): 
@@ -109,6 +113,7 @@ class moveDiff(object):
             return False
 
     def map(self, v, in_min, in_max, out_min, out_max):
+        # Map Function for IN/OUT variables
         # Check that the value is at least in_min
         if v < in_min:
             v = in_min
