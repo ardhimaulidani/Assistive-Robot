@@ -1,12 +1,15 @@
+# Import PyGame Module
 import pygame 
 import pygame.freetype
 import os
 
+# Import Media Player
 from ffpyplayer.player import MediaPlayer
 from ffpyplayer.tools import set_loglevel
 from pymediainfo import MediaInfo
 from errno import ENOENT
 
+# Import Aruco Module
 from aruco_read import aruco
 import cv2
 import numpy as np
