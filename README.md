@@ -1,6 +1,6 @@
 # Assistive-Robot
 
-Development of 2WD Assistive Robot using Raspberry Pi for Biomedical Engineering Final Project 
+Development of 2WD Assistive Robot using Raspberry Pi
 
 ## Installation
 On Windows 10 (for Development)
